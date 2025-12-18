@@ -1,30 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { MOCK_SISTEMAS } from '../constants';
 import StatusBadge from '../components/StatusBadge';
-import { Search, Filter, ArrowRight, AlertCircle } from 'lucide-react';
+import { Search, Filter, ArrowRight, AlertCircle, Eye, Pencil, RotateCcw } from 'lucide-react';
 import { TipoSistema } from '../types';
+import PageTitlebar from '../components/PageTitlebar';
+import EmptyState from '../components/EmptyState';
 
 const CatalogoPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const initialQuery = searchParams.get('q') || '';
-  const [searchTerm, setSearchTerm] = useState(initialQuery);
-  const [filterType, setFilterType] = useState<string>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlQuery = searchParams.get('q') || '';
+  const urlType = searchParams.get('tipo') || 'all';
+
+  const [draftSearchTerm, setDraftSearchTerm] = useState(urlQuery);
+  const [draftFilterType, setDraftFilterType] = useState<string>(urlType);
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(urlQuery);
+  const [appliedFilterType, setAppliedFilterType] = useState<string>(urlType);
 
   useEffect(() => {
-    setSearchTerm(initialQuery);
-  }, [initialQuery]);
+    setDraftSearchTerm(urlQuery);
+    setAppliedSearchTerm(urlQuery);
+    setDraftFilterType(urlType);
+    setAppliedFilterType(urlType);
+  }, [urlQuery, urlType]);
 
-  const filteredSistemas = MOCK_SISTEMAS.filter((sistema) => {
-    const matchesSearch = 
-      sistema.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sistema.sigla.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sistema.tecnologias.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesType = filterType === 'all' || sistema.tipo === filterType;
+  const filteredSistemas = useMemo(() => {
+    return MOCK_SISTEMAS.filter((sistema) => {
+      const query = appliedSearchTerm.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        sistema.nome.toLowerCase().includes(query) ||
+        sistema.sigla.toLowerCase().includes(query) ||
+        sistema.tecnologias.some((t) => t.toLowerCase().includes(query));
 
-    return matchesSearch && matchesType;
-  });
+      const matchesType = appliedFilterType === 'all' || sistema.tipo === appliedFilterType;
+
+      return matchesSearch && matchesType;
+    });
+  }, [appliedFilterType, appliedSearchTerm]);
+
+  const applyFilters = () => {
+    const nextQuery = draftSearchTerm.trim();
+    setAppliedSearchTerm(nextQuery);
+    setAppliedFilterType(draftFilterType);
+
+    const nextParams = new URLSearchParams();
+    if (nextQuery) nextParams.set('q', nextQuery);
+    if (draftFilterType !== 'all') nextParams.set('tipo', draftFilterType);
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const clearFilters = () => {
+    setDraftSearchTerm('');
+    setAppliedSearchTerm('');
+    setDraftFilterType('all');
+    setAppliedFilterType('all');
+    setSearchParams(new URLSearchParams(), { replace: true });
+  };
 
   const getCriticidadeStyle = (c: string) => {
     switch(c) {
@@ -37,44 +69,72 @@ const CatalogoPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800">Catálogo de Sistemas</h2>
-          <p className="text-slate-500">Explore os sistemas disponíveis na corporação.</p>
-        </div>
-        <Link 
-          to="/novo" 
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Novo Sistema
-        </Link>
-      </div>
+      <PageTitlebar
+        title="Catálogo de Sistemas"
+        subtitle="Explore os sistemas disponíveis na corporação."
+        actions={
+          <Link
+            to="/novo"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
+          >
+            Novo sistema
+          </Link>
+        }
+      />
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Filtrar por nome, sigla ou tecnologia..."
-            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+            value={draftSearchTerm}
+            onChange={(e) => setDraftSearchTerm(e.target.value)}
           />
         </div>
         
         <div className="flex items-center gap-2 w-full md:w-auto">
           <Filter className="text-slate-400 w-5 h-5" />
           <select 
-            className="flex-1 md:w-48 py-2 px-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-700"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            className="flex-1 md:w-56 py-2 px-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white text-slate-700"
+            value={draftFilterType}
+            onChange={(e) => setDraftFilterType(e.target.value)}
           >
             <option value="all">Todos os Tipos</option>
             {Object.values(TipoSistema).map(t => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-center gap-2 w-full md:w-auto md:justify-end">
+          <button
+            type="button"
+            onClick={applyFilters}
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors w-full md:w-auto"
+          >
+            Pesquisar
+          </button>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors w-full md:w-auto"
+            title="Limpar filtros"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Limpar
+          </button>
+        </div>
+        </div>
+
+        <div className="text-sm text-slate-500 flex items-center justify-between gap-2">
+          <span>
+            Resultados: <span className="font-semibold text-slate-700">{filteredSistemas.length}</span> de{' '}
+            <span className="font-semibold text-slate-700">{MOCK_SISTEMAS.length}</span>
+          </span>
         </div>
       </div>
 
@@ -105,7 +165,7 @@ const CatalogoPage: React.FC = () => {
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {sistema.tecnologias.slice(0, 3).map((tech) => (
-                    <span key={tech} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100">
+                    <span key={tech} className="text-xs bg-primary/5 text-primary px-2 py-1 rounded border border-primary/10">
                       {tech}
                     </span>
                   ))}
@@ -126,19 +186,41 @@ const CatalogoPage: React.FC = () => {
                 </div>
               </div>
               
-              <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 rounded-b-xl flex justify-end">
-                <Link 
+              <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 rounded-b-xl flex items-center justify-between gap-3">
+                <Link
                   to={`/sistema/${sistema.id}`}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
+                  title="Visualizar detalhes"
                 >
-                  Ver detalhes <ArrowRight className="w-4 h-4" />
+                  <Eye className="w-4 h-4" />
+                  Visualizar
+                </Link>
+                <Link
+                  to={`/novo?id=${encodeURIComponent(sistema.id)}&from=catalogo`}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+                  title="Editar sistema"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Editar
                 </Link>
               </div>
             </div>
           ))
         ) : (
-          <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-xl border border-dashed border-slate-300">
-            <p>Nenhum sistema encontrado com os filtros atuais.</p>
+          <div className="col-span-full">
+            <EmptyState
+              icon={Search}
+              title="Nenhum sistema encontrado"
+              description="Ajuste os filtros ou cadastre um novo sistema."
+              action={
+                <Link
+                  to="/novo"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
+                >
+                  Cadastrar novo sistema
+                </Link>
+              }
+            />
           </div>
         )}
       </div>

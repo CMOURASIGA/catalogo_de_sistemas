@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Ba
 import { MOCK_SISTEMAS } from '../constants';
 import { StatusSistema } from '../types';
 import { Server, Activity, AlertTriangle, ArrowUpRight } from 'lucide-react';
+import PageTitlebar from '../components/PageTitlebar';
 
 const DashboardPage: React.FC = () => {
   // Calculate Stats
@@ -45,31 +46,28 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-800">Dashboard</h2>
-        <p className="text-slate-500">Visão geral do ecossistema de sistemas.</p>
-      </div>
+      <PageTitlebar title="Dashboard" subtitle="Visão geral do ecossistema de sistemas." />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="Total de Sistemas" 
           value={total} 
           icon={Server} 
-          color="bg-blue-600"
+          color="bg-primary"
           subtitle="Cadastrados no catálogo"
         />
         <StatCard 
           title="Em Operação" 
           value={emUso} 
           icon={Activity} 
-          color="bg-green-500" 
+          color="bg-accent" 
           subtitle="Sistemas ativos"
         />
         <StatCard 
           title="Em Implantação" 
           value={implantacao} 
           icon={ArrowUpRight} 
-          color="bg-amber-500" 
+          color="bg-secondary" 
           subtitle="Projetos em andamento"
         />
         <StatCard 
@@ -118,7 +116,7 @@ const DashboardPage: React.FC = () => {
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" width={100} tick={{fontSize: 12}} />
                 <Tooltip cursor={{fill: 'transparent'}} />
-                <Bar dataKey="sistemas" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                <Bar dataKey="sistemas" fill="#00247D" radius={[0, 4, 4, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>

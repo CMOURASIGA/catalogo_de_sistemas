@@ -1,0 +1,109 @@
+:root {
+  --primary-color: #00247d;
+  --primary-dark: #001b5e;
+  --secondary-color: #ad841f;
+  --accent-color: #25cf60;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --bg-light: #f8fafc;
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: Montserrat, ui-sans-serif, system-ui, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-primary);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.content-padding {
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .content-padding {
+    padding: 32px;
+  }
+}
+
+/* Fallback utilities for custom RENAR-like tokens.
+   This makes classes like `bg-primary` work even if Tailwind CDN can't generate them from JS-rendered markup. */
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-primary-dark {
+  background-color: var(--primary-dark) !important;
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color) !important;
+}
+
+.bg-accent {
+  background-color: var(--accent-color) !important;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-primary-dark {
+  color: var(--primary-dark) !important;
+}
+
+.text-secondary {
+  color: var(--secondary-color) !important;
+}
+
+.text-accent {
+  color: var(--accent-color) !important;
+}
+
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+
+/* Tailwind-like alpha helpers used in JSX (classnames with `/`) */
+[class~="bg-primary/5"] {
+  background-color: rgba(0, 36, 125, 0.05) !important;
+}
+
+[class~="bg-primary/10"] {
+  background-color: rgba(0, 36, 125, 0.10) !important;
+}
+
+[class~="border-primary/10"] {
+  border-color: rgba(0, 36, 125, 0.10) !important;
+}
+
+[class~="bg-accent/10"] {
+  background-color: rgba(37, 207, 96, 0.10) !important;
+}
+
+[class~="border-accent/20"] {
+  border-color: rgba(37, 207, 96, 0.20) !important;
+}
+
+/* Tailwind-like hover variants used in JSX (classnames with `:` and/or `/`) */
+[class~="hover:bg-primary-dark"]:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+[class~="hover:text-primary-dark"]:hover {
+  color: var(--primary-dark) !important;
+}
+
+[class~="hover:border-primary/30"]:hover {
+  border-color: rgba(0, 36, 125, 0.30) !important;
+}
