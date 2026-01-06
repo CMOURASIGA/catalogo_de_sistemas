@@ -10,7 +10,9 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    return location.pathname === path ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white';
+  };
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -28,22 +30,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       />
 
       {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ backgroundColor: 'var(--primary-color)' }}
-      >
-        <div className="flex items-center justify-between h-16 px-6" style={{ backgroundColor: 'var(--primary-dark)' }}>
-          <span className="text-xl font-extrabold tracking-wide" style={{ color: 'var(--secondary-color)' }}>
-            CNC<span className="text-white">SYS</span>
-          </span>
-          <button
-            onClick={onClose}
-            className="lg:hidden hover:text-white"
-            style={{ color: 'rgba(255,255,255,0.85)' }}
-            aria-label="Fechar menu"
-            title="Fechar menu"
-            type="button"
-          >
+      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-100 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between h-16 px-6 bg-slate-950">
+          <span className="text-xl font-bold tracking-wider text-blue-400">CNC<span className="text-white">SYS</span></span>
+          <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-white">
             <X size={24} />
           </button>
         </div>
@@ -54,48 +44,33 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               key={item.path}
               to={item.path}
               onClick={() => { if(window.innerWidth < 1024) onClose(); }}
-              className={[
-                'flex items-center px-4 py-3 rounded-lg transition-colors duration-200 group',
-                isActive(item.path) ? 'bg-white' : 'hover:bg-white/10',
-              ].join(' ')}
-              aria-current={location.pathname === item.path ? 'page' : undefined}
-              style={{
-                color: isActive(item.path) ? 'var(--primary-color)' : 'rgba(255,255,255,0.85)',
-              }}
+              className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 group ${isActive(item.path)}`}
             >
               <item.icon className="w-5 h-5 mr-3" />
               <span className="font-medium">{item.name}</span>
             </Link>
           ))}
           
-          <div className="pt-6 mt-6 border-t border-white/20">
-             <Link
-              to="#"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition-colors"
-              style={{ color: 'rgba(255,255,255,0.85)' }}
-            >
+          <div className="pt-6 mt-6 border-t border-slate-800">
+             <Link to="#" className="flex items-center px-4 py-3 text-slate-300 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">
               <Settings className="w-5 h-5 mr-3" />
               <span className="font-medium">Configurações</span>
             </Link>
-             <Link
-              to="#"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition-colors"
-              style={{ color: 'rgba(255,255,255,0.85)' }}
-            >
+             <Link to="#" className="flex items-center px-4 py-3 text-slate-300 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">
               <LogOut className="w-5 h-5 mr-3" />
               <span className="font-medium">Sair</span>
             </Link>
           </div>
         </nav>
         
-        <div className="p-4" style={{ backgroundColor: 'var(--primary-dark)' }}>
+        <div className="p-4 bg-slate-950">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold text-white" style={{ backgroundColor: 'var(--accent-color)' }}>
+            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold">
               AD
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-medium">Admin User</span>
-              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.70)' }}>admin@cnc.corp</span>
+              <span className="text-xs text-slate-400">admin@cnc.corp</span>
             </div>
           </div>
         </div>

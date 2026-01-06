@@ -1,8 +1,6 @@
 import React from 'react';
 import { MOCK_INTEGRACOES, MOCK_SISTEMAS } from '../constants';
 import { ArrowRight, Database, Globe, FileText, Server } from 'lucide-react';
-import PageTitlebar from '../components/PageTitlebar';
-import EmptyState from '../components/EmptyState';
 
 const IntegracoesPage: React.FC = () => {
   const getSystemName = (id: string) => MOCK_SISTEMAS.find(s => s.id === id)?.nome || 'Desconhecido';
@@ -17,19 +15,18 @@ const IntegracoesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <PageTitlebar
-        title="Mapa de Integrações"
-        subtitle="Visualização de dependências e fluxo de dados entre sistemas."
-      />
+      <div>
+        <h2 className="text-2xl font-bold text-slate-800">Mapa de Integrações</h2>
+        <p className="text-slate-500">Visualização de dependências e fluxo de dados entre sistemas.</p>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {MOCK_INTEGRACOES.length > 0 ? (
-          MOCK_INTEGRACOES.map((int) => (
-            <div key={int.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-md transition-shadow">
+        {MOCK_INTEGRACOES.map((int) => (
+          <div key={int.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-md transition-shadow">
             
             {/* Origem */}
             <div className="flex-1 flex items-center gap-4 w-full md:w-auto">
-              <div className="w-12 h-12 bg-primary/5 text-primary rounded-lg flex items-center justify-center font-bold text-sm border border-primary/10 shrink-0">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm border border-blue-100 shrink-0">
                 {getSystemSigla(int.sistemaOrigemId)}
               </div>
               <div>
@@ -56,20 +53,13 @@ const IntegracoesPage: React.FC = () => {
                 <span className="text-xs text-slate-400 font-semibold uppercase">Destino</span>
                 <h3 className="font-medium text-slate-800">{getSystemName(int.sistemaDestinoId)}</h3>
               </div>
-              <div className="w-12 h-12 bg-accent/10 text-accent rounded-lg flex items-center justify-center font-bold text-sm border border-accent/20 shrink-0 order-1 md:order-2">
+              <div className="w-12 h-12 bg-green-50 text-green-600 rounded-lg flex items-center justify-center font-bold text-sm border border-green-100 shrink-0 order-1 md:order-2">
                 {getSystemSigla(int.sistemaDestinoId)}
               </div>
             </div>
 
           </div>
-        ))
-        ) : (
-          <EmptyState
-            icon={Server}
-            title="Nenhuma integração cadastrada"
-            description="Assim que houver mapeamentos, eles aparecerão aqui."
-          />
-        )}
+        ))}
       </div>
     </div>
   );
